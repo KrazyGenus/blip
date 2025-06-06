@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion'; // Added AnimatePresence for status message
 import { UserPlus, CheckCircle, AlertTriangle } from 'lucide-react'; // Icons
+import axios from 'axios';
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 
@@ -52,10 +53,9 @@ const SignupForm = () => {
     }
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      const success = Math.random() < 0.8; // Simulate success/failure
-
-      if (success) {
+      const response = await axios.post("/api/user/signup", {name, email, password});
+      console.log(response);
+      if (response.status === 200) {
         setStatus('success');
         setMessage('Account created successfully! Please check your email to verify.');
         setName('');

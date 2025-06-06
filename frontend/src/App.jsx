@@ -7,7 +7,7 @@ import React, { useState, useCallback } from 'react';
 
 const App = () => {
   return (
-    <LandingPage />
+    <SignUpPage />
   )
 }
 export default App;

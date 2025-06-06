@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, CheckCircle, AlertTriangle } from 'lucide-react'; // Icons
-
+import axios from 'axios';
 const cn = (...args) => args.filter(Boolean).join(' ');
 
 const containerVariants = {
@@ -115,10 +115,8 @@ const LoginPage = () => {
       setStatus({ state: 'idle', message: '' });
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        const success = Math.random() > 0.5;
-
-        if (success) {
+        const response = await axios.post('api/user/login', {email, password});
+        if (response) {
           setStatus({ state: 'success', message: 'Login successful! Redirecting...' });
           setEmail('');
           setPassword('');
