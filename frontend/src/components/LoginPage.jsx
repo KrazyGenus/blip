@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, CheckCircle, AlertTriangle } from 'lucide-react'; // Icons
 import axios from 'axios';
+import {Link} from 'react-router-dom';
 const cn = (...args) => args.filter(Boolean).join(' ');
 
 const containerVariants = {
@@ -80,6 +81,7 @@ const LoginPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState({ state: 'idle', message: '' });
 
+
   const validate = () => {
     let valid = true;
     if (!email) {
@@ -101,6 +103,7 @@ const LoginPage = () => {
 
     return valid;
   };
+
 
   const handleSubmit = useCallback(
     async (e) => {
@@ -256,9 +259,9 @@ const LoginPage = () => {
 
         <motion.div variants={itemVariants} className="text-center text-cyan-400 text-md">
           Don't have an account?{' '}
-          <a href="#" className="text-purple-400 font-semibold hover:underline hover:text-purple-500">
+          <Link to="/signup" className="text-purple-400 font-semibold hover:underline hover:text-purple-500">
             Sign up
-          </a>
+          </Link>
         </motion.div>
       </motion.div>
     </div>

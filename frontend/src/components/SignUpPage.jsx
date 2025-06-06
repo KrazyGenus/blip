@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion'; // Added AnimatePresence for status message
 import { UserPlus, CheckCircle, AlertTriangle } from 'lucide-react'; // Icons
 import axios from 'axios';
-
+import {Link} from 'react-router-dom';
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 
 const containerVariants = {
@@ -182,9 +182,9 @@ const SignupForm = () => {
 
       <motion.div variants={itemVariants} className="text-center text-gray-400 text-md"> {/* Unified text size */}
         Already have an account?{' '}
-        <a href="#" className="text-blue-400 font-semibold hover:underline">
+        <Link to="/login" className="text-blue-400 font-semibold hover:underline">
           Log in
-        </a>
+        </Link>
       </motion.div>
     </motion.div>
   );

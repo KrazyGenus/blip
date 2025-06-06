@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ListChecks, AlertTriangle, CheckCircle, Zap } from 'lucide-react';
-
+import { useNavigate } from 'react-router-dom';
 // Animation Variants
 const fadeIn = {
   hidden: { opacity: 0, y: 50 },
@@ -58,6 +58,10 @@ const FeatureCard = ({ feature }) => {
 
 // Main LandingPage Component
 const LandingPage = () => {
+  const navigate = useNavigate();
+  const handleClick = () =>{
+    navigate('/login');
+  }
   return (
     <div className="bg-gradient-to-br from-gray-900 via-indigo-900 to-black text-white min-h-screen w-full">
       {/* Hero Section */}
@@ -80,7 +84,7 @@ const LandingPage = () => {
             Blip scans your videos before upload—helping YouTubers stay compliant, monetize smoothly, and avoid takedowns.
           </p>
           <button
-            className="bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold rounded-full px-8 py-3 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-lg"
+            className="bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold rounded-full px-8 py-3 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-lg" onClick={handleClick}
           >
             Get Started
           </button>
@@ -129,7 +133,7 @@ const LandingPage = () => {
       <footer className="mx-auto px-4 py-20 text-center w-full max-w-full">
         <h2 className="text-4xl font-bold mb-8 text-white">Ready to Get Started?</h2>
         <button
-          className="bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold rounded-full px-8 py-3 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-xl"
+          className="bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold rounded-full px-8 py-3 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-xl" onClick={handleClick}
         >
           Start Your Free Trial
         </button>
