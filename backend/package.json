@@ -1,10 +1,10 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "nodemon /home/user/blip/backend/src/server.js",
+  "main": "nodemon /src/server.js",
   "scripts": {
     "test": "jest",
-    "dev": "nodemon /home/user/blip/backend/src/server.js"
+    "dev": "nodemon /src/server.js"
   },
   "author": "KrazyGenus",
   "license": "ISC",
