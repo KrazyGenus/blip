@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/routes/videoUploadRoute.js</title>
+    <title>Code coverage report for core/database.js</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="../../prettify.css" />
-    <link rel="stylesheet" href="../../base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(../../sort-arrow-sprite.png);
+            background-image: url(../sort-arrow-sprite.png);
         }
     </style>
 </head>
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/routes</a> videoUploadRoute.js</h1>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">core</a> database.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">91.22% </span>
+                <span class="strong">67.27% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>52/57</span>
+                <span class='fraction'>37/55</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">71.42% </span>
+                <span class="strong">80% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>5/7</span>
+                <span class='fraction'>4/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">66.66% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>4/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">91.22% </span>
+                <span class="strong">67.27% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>52/57</span>
+                <span class='fraction'>37/55</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -117,9 +117,7 @@
 <a name='L52'></a><a href='#L52'>52</a>
 <a name='L53'></a><a href='#L53'>53</a>
 <a name='L54'></a><a href='#L54'>54</a>
-<a name='L55'></a><a href='#L55'>55</a>
-<a name='L56'></a><a href='#L56'>56</a>
-<a name='L57'></a><a href='#L57'>57</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L55'></a><a href='#L55'>55</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -139,115 +137,111 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">const express = require('express');
-const videoUploadRoute = express.Router();
-const fs = require('fs').promises; // Use promises for fs operations
-const path = require('path');
-const Busboy = require('busboy');
+<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">const { Pool } = require('pg');
+const { isExistingEmail } = require('../crud/userAuth');
+require('dotenv').config();
 &nbsp;
-const ffmpeg = require('fluent-ffmpeg');
-const ffmpegPath = require('ffmpeg-static');
-&nbsp;
-ffmpeg.setFfmpegPath(ffmpegPath);
-&nbsp;
-const processVideo = (fileStream, mimetype, outputPath) =&gt; {
-    return new Promise((resolve, reject) =&gt; {
-        ffmpeg(fileStream)
-            .inputFormat(mimetype.split('/')[1])
-            .output(outputPath)
-            .on('end', resolve) // Resolve the promise on 'end' event
-            .on('error', reject) // Reject the promise on 'error' event
-            .run();
-    });
-};
-&nbsp;
-videoUploadRoute.post('/', async (req, res) =&gt; {
-    const busboy = Busboy({ headers: req.headers });
-&nbsp;
-    try {
-        await new Promise((resolve, reject) =&gt; {
-            busboy.on('file', async (fieldname, fileStream, filename, encoding, mimetype) =&gt; {
-                const outputDir = path.join(__dirname, 'frames');
-                await fs.mkdir(outputDir, { recursive: true });
-                const outputPath = path.join(outputDir, 'frame-%03d.jpg');
-&nbsp;
-                try {
-                    await processVideo(fileStream, mimetype, outputPath)<span class="branch-0 cbranch-no" title="branch not covered" >;</span>
-<span class="cstat-no" title="statement not covered" >                    res.status(200).send('Frames saved');</span>
-<span class="cstat-no" title="statement not covered" >                    resolve(); // Resolve the outer promise when processing is successful</span>
-                } catch (error) {
-                    console.error('FFmpeg processing failed:', error);
-                    res.status(500).send('Failed to process video');
-                    reject(error); // Reject the outer promise if FFmpeg fails
-                }
-            });
-&nbsp;
-            busboy.on('error', (err) =&gt; {
-<span class="cstat-no" title="statement not covered" >                console.error('Busboy error:', err);</span>
-<span class="cstat-no" title="statement not covered" >                res.status(500).send('Busboy error');</span>
-<span class="cstat-no" title="statement not covered" >                reject(err); // Reject the outer promise if Busboy encounters an error</span>
-            });
-&nbsp;
-            req.pipe(busboy); // Pipe the request to Busboy here, after setting up listeners
-        })<span class="branch-0 cbranch-no" title="branch not covered" >;</span>
-    } catch (error) {
-        // The errors are already handled within the busboy promise
+class DatabaseManager {
+    constructor() {
+        this.createPool();
     }
-});
 &nbsp;
-module.exports = videoUploadRoute;</pre></td></tr></table></pre>
+    createPool() {
+        this.pool = new Pool(
+            {
+                user: process.env.USER,
+                host: process.env.HOST,
+                database: process.env.DATABASE || 'blip_user_store',
+                password: process.env.PASSWORD,
+            });
+    }
+&nbsp;
+    getPool() {
+        return this.pool;
+    }
+&nbsp;
+    async isAlive(){
+        try {
+            await this.pool.query('SELECT 1');
+            return true;
+        } <span class="branch-0 cbranch-no" title="branch not covered" >catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >            console.log('Database connection is dead', error);</span>
+<span class="cstat-no" title="statement not covered" >            return false;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    async reconnect() {</span>
+<span class="cstat-no" title="statement not covered" >        try {</span>
+<span class="cstat-no" title="statement not covered" >            console.log('reconnecting to the database.');</span>
+<span class="cstat-no" title="statement not covered" >            await this.pool.end();</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >        } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >            console.log('Error ending pool and cleaning up', error);</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >        await this.createPool();</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+&nbsp;
+<span class="fstat-no" title="function not covered" >    async close(){</span>
+<span class="cstat-no" title="statement not covered" >        try {</span>
+<span class="cstat-no" title="statement not covered" >            await self.pool.end();</span>
+<span class="cstat-no" title="statement not covered" >        } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >            </span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+}
+&nbsp;
+const databaseManager = new DatabaseManager();
+module.exports = {databaseManager};</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-07T08:10:56.901Z
+                at 2025-06-08T14:31:08.584Z
             </div>
-        <script src="../../prettify.js"></script>
+        <script src="../prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="../../sorter.js"></script>
-        <script src="../../block-navigation.js"></script>
+        <script src="../sorter.js"></script>
+        <script src="../block-navigation.js"></script>
     </body>
 </html>
     
