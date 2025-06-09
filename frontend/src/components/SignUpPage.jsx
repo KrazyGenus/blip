@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion'; // Added AnimatePresenc
 import { UserPlus, CheckCircle, AlertTriangle } from 'lucide-react'; // Icons
 import axios from 'axios';
 import {Link} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 
 const containerVariants = {
@@ -15,15 +17,17 @@ const itemVariants = {
   visible: { y: 0, opacity: 1, scale: 1, transition: { type: 'spring', stiffness: 300, damping: 20 } },
 };
 
-const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
 const SignupForm = () => {
-  const [name, setName] = useState('');
+  const [username, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState('idle'); // 'idle', 'success', 'error'
   const [message, setMessage] = useState('');
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,7 +35,7 @@ const SignupForm = () => {
     setStatus('idle');
     setMessage('');
 
-    if (!name.trim() || !email.trim() || !password) {
+    if (!username.trim() || !email.trim() || !password) {
       setStatus('error');
       setMessage('Please fill in all fields.');
       setIsSubmitting(false);
@@ -53,17 +57,21 @@ const SignupForm = () => {
     }
 
     try {
-      const response = await axios.post("/api/user/signup", {name, email, password});
-      console.log(response);
-      if (response.status === 200) {
-        setStatus('success');
-        setMessage('Account created successfully! Please check your email to verify.');
-        setName('');
-        setEmail('');
-        setPassword('');
-      } else {
-        throw new Error('Failed to create account. Please try again.');
-      }
+        const response = await axios.post("/api/user/signup", {username, email, password});
+        console.log(response);
+        if (response.status === 200) {
+          setStatus('success');
+          setMessage(' Thank You Account created successfully! You will be redrected to the Login page.');
+          setName('');
+          setEmail('');
+          setPassword('');
+          
+          setTimeout(() =>{
+            navigate('/login');
+          }, 3000);
+        } else {
+          throw new Error('Failed to create account. Please try again.');
+        }
     } catch (error) {
       setStatus('error');
       setMessage(error.message || 'An unexpected error occurred.');
@@ -92,7 +100,7 @@ const SignupForm = () => {
       </h1>
       <form onSubmit={handleSubmit} className="space-y-6">
         {[
-          { label: 'Name', id: 'name', type: 'text', value: name, setValue: setName, autoComplete: 'name', placeholder: 'Enter your name' },
+          { label: 'Username', id: 'username', type: 'text', value: username, setValue: setName, autoComplete: 'username', placeholder: 'Enter your username' },
           { label: 'Email', id: 'email', type: 'email', value: email, setValue: setEmail, autoComplete: 'email', placeholder: 'Enter your email' },
           { label: 'Password', id: 'password', type: 'password', value: password, setValue: setPassword, autoComplete: 'new-password', placeholder: 'Enter your password' },
         ].map(({ label, id, type, value, setValue, autoComplete, placeholder }) => (

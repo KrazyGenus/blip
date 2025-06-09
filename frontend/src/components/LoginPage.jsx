@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, CheckCircle, AlertTriangle } from 'lucide-react'; // Icons
 import axios from 'axios';
 import {Link} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 const cn = (...args) => args.filter(Boolean).join(' ');
 
 const containerVariants = {
@@ -81,6 +82,7 @@ const LoginPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState({ state: 'idle', message: '' });
 
+  const navigate = useNavigate();
 
   const validate = () => {
     let valid = true;
@@ -119,12 +121,13 @@ const LoginPage = () => {
 
       try {
         const response = await axios.post('api/user/login', {email, password});
-        if (response) {
+        if (response.status === 200) {
           setStatus({ state: 'success', message: 'Login successful! Redirecting...' });
           setEmail('');
           setPassword('');
           setEmailError('');
           setPasswordError('');
+          navigate('/dashboard');
         } else {
           throw new Error('Invalid email or password. Please try again.');
         }
