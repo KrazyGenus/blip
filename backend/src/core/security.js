@@ -10,7 +10,8 @@
 
 
 const bcrypt = require('bcrypt');
-
+const jwt = require('jsonwebtoken');
+const fs = require('fs');
 /**
  * 
  * @param {*} plainPassword 
@@ -33,5 +34,26 @@ async function unhashAndCompare(plainPassword, hashedPassword) {
     return isMatch;
 }
 
+async function signGenerateToken(userId, userEmail) {
+    const privateKey = fs.readFileSync("/home/krazygenus/Desktop/blip/backend/private.key", "utf8");
+    const token = jwt.sign({ id: userId, email: userEmail }, privateKey, {
+        algorithm: "RS256",
+        expiresIn: "1h"
+    });
+    return token;
+}
 
-module.exports = {hashPassword, unhashAndCompare};
+async function signDecodeToken(token) {
+    try {
+        const publicKey = fs.readFileSync("/home/krazygenus/Desktop/blip/backend/public.key", "utf8");
+        const decode = jwt.verify(token, publicKey, {
+            algorithms: ["RS256"]
+        });
+        return {status: 200, decode };
+    } catch (error) {
+        console.error("JWT Decode Error:", error);
+        return { status: false, error };
+    }
+}
+
+module.exports = {hashPassword, unhashAndCompare, signGenerateToken, signDecodeToken};

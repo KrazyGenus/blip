@@ -117,7 +117,7 @@ async function userLogin(loginEmail, password) {
             const result = await pool.query(query, [loginEmail]);
 
             const user = result.rows[0];
-
+            console.log('During db retrival object', user);
             //verify password
             const isPasswordValid = await unhashAndCompare(password, user.password_hash);
             if (!isPasswordValid){
@@ -128,7 +128,7 @@ async function userLogin(loginEmail, password) {
             return {
                 success: true,
                 user: {
-                    id: user.id,
+                    id: user.user_id,
                     username: user.username,
                     email: user.email
                 },
