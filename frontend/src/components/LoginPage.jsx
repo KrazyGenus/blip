@@ -1,9 +1,14 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react'; // Import useEffect
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, CheckCircle, AlertTriangle } from 'lucide-react'; // Icons
 import axios from 'axios';
-import {Link} from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // No change here
+import { useAuth } from '../context/AuthContext'; // No change here
+
+// Assuming AUTH_TOKEN_LOCAL_STORAGE_KEY is consistently defined in AuthContext.js
+// If not, define it there and import it, or ensure it's "token" if that's what you're using.
+// Example: import { AUTH_TOKEN_LOCAL_STORAGE_KEY } from '../context/AuthContext';
+
 const cn = (...args) => args.filter(Boolean).join(' ');
 
 const containerVariants = {
@@ -83,8 +88,10 @@ const LoginPage = () => {
   const [status, setStatus] = useState({ state: 'idle', message: '' });
 
   const navigate = useNavigate();
+  // Get both login function and the isAuthenticated state from context
+  const { login, isAuthenticated } = useAuth(); 
 
-  const validate = () => {
+  const validate = useCallback(() => {
     let valid = true;
     if (!email) {
       setEmailError('Email is required.');
@@ -104,7 +111,19 @@ const LoginPage = () => {
     }
 
     return valid;
-  };
+  }, [email, password]); // Added email and password to useCallback dependencies
+
+  // --- SOLUTION INTEGRATION START ---
+  // This useEffect will run whenever the 'isAuthenticated' state changes in AuthContext.
+  // It ensures navigation happens *after* the state is truly updated.
+  useEffect(() => {
+    console.log("LoginPage useEffect: isAuthenticated state changed to:", isAuthenticated);
+    if (isAuthenticated) {
+      console.log("LoginPage useEffect: User is now authenticated, navigating to /dashboard.");
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, navigate]); // Dependencies: watches for changes in isAuthenticated and navigate
+  // --- SOLUTION INTEGRATION END ---
 
 
   const handleSubmit = useCallback(
@@ -117,27 +136,66 @@ const LoginPage = () => {
       }
 
       setIsSubmitting(true);
-      setStatus({ state: 'idle', message: '' });
+      setStatus({ state: 'idle', message: '' }); // Clear previous status
 
       try {
-        const response = await axios.post('api/user/login', {email, password});
+        const response = await axios.post('api/user/login', { email, password });
+
         if (response.status === 200) {
-          setStatus({ state: 'success', message: 'Login successful! Redirecting...' });
+          const token = response.data.token;
+          console.log("LoginPage handleSubmit: Login API successful. Token received:", token);
+
+          // 1. Call the `login` function from your AuthContext.
+          // This function stores the token in localStorage AND updates the `isAuthenticated` state.
+          login(token); // This call triggers the `useEffect` above to eventually navigate.
+
+          // Your original console.log for localStorage check is still useful for debugging:
+          console.log('LoginPage handleSubmit: Token after AuthContext.login() call:', localStorage.getItem('token'));
+          // Important: Ensure the key 'token' matches the one your AuthContext expects!
+          // If your AuthContext uses 'jwt_token', then change localStorage.getItem('token') to localStorage.getItem('jwt_token')
+          // and ensure the login function in AuthContext also sets 'jwt_token'.
+
+          setStatus({ state: 'success', message: 'Login successful! Attempting dashboard access...' });
           setEmail('');
           setPassword('');
           setEmailError('');
           setPasswordError('');
-          navigate('/dashboard');
+
+          // 2. (Optional) Your immediate dashboard API call for server-side validation.
+          // This is good practice, but it's no longer directly responsible for triggering client-side navigation.
+          // The navigation to /dashboard is now handled by the useEffect above.
+          try {
+            const dash = await axios.get('/api/user/dashboard', {
+                headers: {
+                    Authorization: `Bearer ${token}` // IMPORTANT: Use the newly obtained token here
+                }
+            });
+            if (dash.status === 200) {
+                console.log("LoginPage handleSubmit: Dashboard API verification successful.");
+            } else {
+                console.warn("LoginPage handleSubmit: Dashboard API verification returned non-200 status.");
+                setStatus(prev => ({ ...prev, message: prev.message + " (Dashboard verification failed)." }));
+            }
+          } catch (dashboardApiError) {
+              console.error("LoginPage handleSubmit: Error during dashboard API verification:", dashboardApiError);
+              setStatus(prev => ({ ...prev, message: prev.message + " (Dashboard verification failed unexpectedly)." }));
+              // Decide how to handle this: show error, log out, etc.
+          }
+
+
         } else {
-          throw new Error('Invalid email or password. Please try again.');
+          // If login API returns a non-200 status but no error is thrown by axios
+          throw new Error(response.data.message || 'Invalid email or password. Please try again.');
         }
       } catch (error) {
-        setStatus({ state: 'error', message: error.message || 'An unexpected error occurred during login.' });
+        // Handle network errors or errors thrown by axios for non-2xx responses
+        console.error("LoginPage handleSubmit: Login API call error:", error);
+        setStatus({ state: 'error', message: error.response?.data?.message || error.message || 'An unexpected error occurred during login.' });
       } finally {
         setIsSubmitting(false);
       }
     },
-    [email, password]
+    [email, password, validate, login, isAuthenticated, navigate] // Added all necessary dependencies
   );
 
   return (
