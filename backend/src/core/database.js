@@ -2,6 +2,7 @@ const { Pool } = require('pg');
 const { isExistingEmail } = require('../crud/userAuth');
 require('dotenv').config();
 
+
 class DatabaseManager {
     constructor() {
         this.createPool();

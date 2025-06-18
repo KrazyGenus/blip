@@ -1,57 +1,88 @@
 const express = require('express');
+const os = require('os');
 const videoUploadRoute = express.Router();
-const fs = require('fs').promises; // Use promises for fs operations
-const path = require('path');
-const Busboy = require('busboy');
+const { upload } = require('../core/storage');
+const { videoProcessing } = require('../core/videoProcessingPipeline');
+const { extractMetaData } = require('../utils/getVideoMeta');
+const busboy = require('busboy');
+const { videoQueue } = require('../utils/queues/videoQueue');
 
-const ffmpeg = require('fluent-ffmpeg');
-const ffmpegPath = require('ffmpeg-static');
+// videoUploadRoute.post('/', upload.single('video'), async (req, res) => {
+//     if(!req.file){return res.status(400).json({error: 'No file uploaded.'})}
+//     res.status(200).json({success: true, message: 'Upload was successful'});
+//     const response = await extractMetaData(req.file.path);
+//     console.log('I am in videoupload route and i have: ', req.user);
+// });
 
-ffmpeg.setFfmpegPath(ffmpegPath);
+let tempBuffer = Buffer.alloc(0);
+let chunkIndex = 0;
+const CHUNK_LIMIT = 10 * 1024 * 1024; // 10MB
+//const CHUNK_LIMIT = 5 * 1024 * 1024;  // 5MB
 
-const processVideo = (fileStream, mimetype, outputPath) => {
-    return new Promise((resolve, reject) => {
-        ffmpeg(fileStream)
-            .inputFormat(mimetype.split('/')[1])
-            .output(outputPath)
-            .on('end', resolve) // Resolve the promise on 'end' event
-            .on('error', reject) // Reject the promise on 'error' event
-            .run();
+videoUploadRoute.post('/', async(req, res) => {
+    const bb = busboy({ headers: req.headers });
+    bb.on('file', (name, file, info) => {
+      file.on('data', async (chunk) => {
+        console.log(`File [${name}] got ${chunk.length} bytes`);
+        tempBuffer = Buffer.concat([tempBuffer, chunk]);
+        
+        if (tempBuffer.length >= CHUNK_LIMIT) {
+            const chunkToProcess = tempBuffer;
+            tempBuffer = Buffer.alloc(0);
+            try {
+              await videoQueue.add('processChunk', 
+                {
+                  chunk: chunkToProcess.toString('base64'),
+                  chunkIndex: chunkIndex++
+            });
+            } catch (error) {
+              console.log('Error during queue', error);
+            }
+        }
+
+      file.on('end', async () =>{
+        console.log(`File [${name}] finished stream. Remaining buffer length: ${tempBuffer.length} bytes.`);
+        if (tempBuffer.length > 0) {
+            // Process any remaining data as the last chunk
+            try {
+                await videoQueue.add('processChunk', {
+                    chunk: tempBuffer.toString('base64'),
+                    chunkIndex: chunkIndex++
+                }, {
+                    jobId: `${name}-chunk-final-${chunkIndex - 1}`
+                });
+                console.log(`Successfully enqueued FINAL chunk ${chunkIndex - 1} of file [${name}] with ${tempBuffer.length} bytes.`);
+            } catch (error) {
+                console.error(`ERROR: Failed to enqueue FINAL chunk for file [${name}]:`, error);
+            }
+            tempBuffer = Buffer.alloc(0); // Clear the buffer after processing
+        }
+        console.log(`Finished processing file [${name}].`);
+      });
+      
+      file.on('error', (err) => {
+        console.error(`File [${name}] stream error:`, err);
+        // Handle stream errors (e.g., client disconnected prematurely)
     });
-};
 
-videoUploadRoute.post('/', async (req, res) => {
-    const busboy = Busboy({ headers: req.headers });
+    }).on('close', () => {
+        console.log(`File [${name}] done`);
+      });
+    });
 
-    try {
-        await new Promise((resolve, reject) => {
-            busboy.on('file', async (fieldname, fileStream, filename, encoding, mimetype) => {
-                const outputDir = path.join(__dirname, 'frames');
-                await fs.mkdir(outputDir, { recursive: true });
-                const outputPath = path.join(outputDir, 'frame-%03d.jpg');
 
-                try {
-                    await processVideo(fileStream, mimetype, outputPath);
-                    res.status(200).send('Frames saved');
-                    resolve(); // Resolve the outer promise when processing is successful
-                } catch (error) {
-                    console.error('FFmpeg processing failed:', error);
-                    res.status(500).send('Failed to process video');
-                    reject(error); // Reject the outer promise if FFmpeg fails
-                }
-            });
 
-            busboy.on('error', (err) => {
-                console.error('Busboy error:', err);
-                res.status(500).send('Busboy error');
-                reject(err); // Reject the outer promise if Busboy encounters an error
-            });
-
-            req.pipe(busboy); // Pipe the request to Busboy here, after setting up listeners
+    bb.on('close', async () => {
+      console.log('Done parsing form!');
+      if (tempBuffer.length > 0) {
+        await videoQueue.add('processChunk', {
+          chunk:tempBuffer.toString('base64'),
+          chunkIndex: chunkIndex++
         });
-    } catch (error) {
-        // The errors are already handled within the busboy promise
-    }
-});
-
+      }
+      res.writeHead(303, { Connection: 'close', Location: '/' });
+      res.end();
+    });
+    req.pipe(bb);
+})
 module.exports = videoUploadRoute;

@@ -34,6 +34,13 @@ async function unhashAndCompare(plainPassword, hashedPassword) {
     return isMatch;
 }
 
+
+/**
+ * 
+ * @param {*} userId 
+ * @param {*} userEmail 
+ * @returns 
+ */
 async function signGenerateToken(userId, userEmail) {
     const privateKey = fs.readFileSync("/home/krazygenus/Desktop/blip/backend/private.key", "utf8");
     const token = jwt.sign({ id: userId, email: userEmail }, privateKey, {
@@ -43,16 +50,22 @@ async function signGenerateToken(userId, userEmail) {
     return token;
 }
 
+
+/**
+ * 
+ * @param {*} token 
+ * @returns 
+ */
 async function signDecodeToken(token) {
     try {
         const publicKey = fs.readFileSync("/home/krazygenus/Desktop/blip/backend/public.key", "utf8");
         const decode = jwt.verify(token, publicKey, {
             algorithms: ["RS256"]
         });
-        return {status: 200, decode };
+        return decode;
     } catch (error) {
         console.error("JWT Decode Error:", error);
-        return { status: false, error };
+        return false;
     }
 }
 
