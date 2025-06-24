@@ -1,5 +1,4 @@
 //Singleton Redis connection (using ioredis)
-
 const IORedis = require('ioredis');
 
 
@@ -19,5 +18,4 @@ class RedisClient{
 }
 
 const redisClient = new RedisClient();
-console.log(redisClient);
 module.exports = { redisClient }

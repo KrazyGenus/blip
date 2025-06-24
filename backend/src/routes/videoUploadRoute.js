@@ -1,88 +1,60 @@
 const express = require('express');
-const os = require('os');
-const videoUploadRoute = express.Router();
-const { upload } = require('../core/storage');
-const { videoProcessing } = require('../core/videoProcessingPipeline');
-const { extractMetaData } = require('../utils/getVideoMeta');
+const path = require('path');
+const fs = require('fs');
 const busboy = require('busboy');
-const { videoQueue } = require('../utils/queues/videoQueue');
+const { v4: uuidv4 } = require('uuid');
+const { uploadMetaDataQueue } = require('../utils/queues/uploadMetaDataQueue');
 
-// videoUploadRoute.post('/', upload.single('video'), async (req, res) => {
-//     if(!req.file){return res.status(400).json({error: 'No file uploaded.'})}
-//     res.status(200).json({success: true, message: 'Upload was successful'});
-//     const response = await extractMetaData(req.file.path);
-//     console.log('I am in videoupload route and i have: ', req.user);
-// });
+const videoUploadRoute = express.Router();
+const TEMP_DIR = '/home/krazygenus/Desktop/blip/backend/src/temp';
+const FRAME_BASE_DIR = '/home/krazygenus/Desktop/blip/backend/src/frames';
 
-let tempBuffer = Buffer.alloc(0);
-let chunkIndex = 0;
-const CHUNK_LIMIT = 10 * 1024 * 1024; // 10MB
-//const CHUNK_LIMIT = 5 * 1024 * 1024;  // 5MB
+videoUploadRoute.post('/', (req, res) => {
+  if (!req.user?.id) {
+    return res.status(401).json({ message: 'Authentication required' });
+  }
 
-videoUploadRoute.post('/', async(req, res) => {
-    const bb = busboy({ headers: req.headers });
-    bb.on('file', (name, file, info) => {
-      file.on('data', async (chunk) => {
-        console.log(`File [${name}] got ${chunk.length} bytes`);
-        tempBuffer = Buffer.concat([tempBuffer, chunk]);
-        
-        if (tempBuffer.length >= CHUNK_LIMIT) {
-            const chunkToProcess = tempBuffer;
-            tempBuffer = Buffer.alloc(0);
-            try {
-              await videoQueue.add('processChunk', 
-                {
-                  chunk: chunkToProcess.toString('base64'),
-                  chunkIndex: chunkIndex++
-            });
-            } catch (error) {
-              console.log('Error during queue', error);
-            }
-        }
+  const bb = busboy({ headers: req.headers });
+  const uploadPromises = [];
+  const userId = req.user.id;
 
-      file.on('end', async () =>{
-        console.log(`File [${name}] finished stream. Remaining buffer length: ${tempBuffer.length} bytes.`);
-        if (tempBuffer.length > 0) {
-            // Process any remaining data as the last chunk
-            try {
-                await videoQueue.add('processChunk', {
-                    chunk: tempBuffer.toString('base64'),
-                    chunkIndex: chunkIndex++
-                }, {
-                    jobId: `${name}-chunk-final-${chunkIndex - 1}`
-                });
-                console.log(`Successfully enqueued FINAL chunk ${chunkIndex - 1} of file [${name}] with ${tempBuffer.length} bytes.`);
-            } catch (error) {
-                console.error(`ERROR: Failed to enqueue FINAL chunk for file [${name}]:`, error);
-            }
-            tempBuffer = Buffer.alloc(0); // Clear the buffer after processing
-        }
-        console.log(`Finished processing file [${name}].`);
-      });
-      
-      file.on('error', (err) => {
-        console.error(`File [${name}] stream error:`, err);
-        // Handle stream errors (e.g., client disconnected prematurely)
-    });
+  bb.on('file', (fieldname, file, fileInfo) => {
+    const jobId = uuidv4();
+    const safeName = fileInfo.filename.replace(/\s+/g, '_');
+    const tempPath = path.join(TEMP_DIR, `${jobId}_${safeName}`);
+    const frameDir = path.join(FRAME_BASE_DIR, `user_${userId}`, jobId);
 
-    }).on('close', () => {
-        console.log(`File [${name}] done`);
-      });
-    });
+    fs.mkdirSync(path.dirname(tempPath), { recursive: true });
+    fs.mkdirSync(frameDir, { recursive: true });
 
+    const writeStream = fs.createWriteStream(tempPath);
 
-
-    bb.on('close', async () => {
-      console.log('Done parsing form!');
-      if (tempBuffer.length > 0) {
-        await videoQueue.add('processChunk', {
-          chunk:tempBuffer.toString('base64'),
-          chunkIndex: chunkIndex++
+    const filePromise = new Promise((resolve) => {
+      let size = 0;
+      file.on('data', chunk => size += chunk.length);
+      file.pipe(writeStream)
+        .on('finish', () => {
+          uploadMetaDataQueue.add('process_video', {
+            jobId,
+            userId,
+            tempPath,
+            frameDir,
+            originalName: safeName,
+            size
+          });
+          resolve(jobId);
         });
-      }
-      res.writeHead(303, { Connection: 'close', Location: '/' });
-      res.end();
     });
-    req.pipe(bb);
-})
-module.exports = videoUploadRoute;
+
+    uploadPromises.push(filePromise);
+  });
+
+  bb.on('finish', async () => {
+    const jobIds = await Promise.all(uploadPromises);
+    res.status(202).json({ message: `${jobIds.length} video(s) queued`, jobIds });
+  });
+
+  req.pipe(bb);
+});
+
+module.exports = { videoUploadRoute };

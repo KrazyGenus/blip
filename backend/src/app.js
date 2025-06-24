@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const videoUploadRoute = require('./routes/videoUploadRoute');
+const { videoUploadRoute } = require('./routes/videoUploadRoute');
 const loginAndSignUpRouter = require('./routes/loginAndSignUpRoute');
 const userDashBoardRoute = require('./routes/userDashBoardRoute')
 const { signDecodeToken } = require('./core/security')
