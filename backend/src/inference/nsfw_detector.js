@@ -13,7 +13,7 @@ async function modelNSFWHuggingFace(imagePath) {
     {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+        Authorization: `Bearer ${process.env."HUGGINGFACE_API_KEY"}`,
         'Content-Type': 'image/jpeg',
       },
       body: buffer,

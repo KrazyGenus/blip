@@ -3,11 +3,11 @@ require('dotenv').config()
 const fs = require('fs/promises');
 
 
-GOOGLE_GEMENI_API_KEY = process.env.GOOGLE_GEMENI_BLIP_API_KEY;
-console.log(GOOGLE_GEMENI_API_KEY);
+// GOOGLE_GEMENI_API_KEY = process.env.GOOGLE_GEMENI_BLIP_API_KEY;
+
 
 async function googleGemeni(imagePath) {
-    const googleGemeniVision = new GoogleGenAI({apiKey: GOOGLE_GEMENI_API_KEY });
+    const googleGemeniVision = new GoogleGenAI({apiKey: "GOOGLE_GEMENI_API_KEY" });
     const base64ImageFile = await fs.readFile(imagePath, { encoding: 'base64' });
     const contents = [
         {
