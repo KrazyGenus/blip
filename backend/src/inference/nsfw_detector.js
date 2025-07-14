@@ -1,19 +1,18 @@
 const fs = require('fs');
 const fetch = require('node-fetch');
-const path = require('path');
-require('dotenv').config();
+const env = require('../../env-loader');
 
-
-
-async function modelNSFWHuggingFace(imagePath) {
-  const buffer = fs.readFileSync(imagePath);
+const HUGGINGFACE_NSFW_KEY = env.HUGGINGFACE_API_KEY
+async function modelNSFWHuggingFace(frameObject) {
+  console.log('In hugging face NSFW MODEL', frameObject);
+  const buffer = fs.readFileSync(frameObject.framePath);
 
   const response = await fetch(
-    'https://api-inference.huggingface.co/models/Falconsai/nsfw_image_detection',
+    'https://router.huggingface.co/hf-inference/models/Freepik/nsfw_image_detector',
     {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${process.env."HUGGINGFACE_API_KEY"}`,
+        Authorization: `Bearer ${ HUGGINGFACE_NSFW_KEY }`,
         'Content-Type': 'image/jpeg',
       },
       body: buffer,
@@ -21,18 +20,7 @@ async function modelNSFWHuggingFace(imagePath) {
   );
 
   const result = await response.json();
-  result.forEach((item) => {
-    if (item.label === 'nsfw') {
-      if (item.score <= 0.0001419968466507271) {
-        console.log('not safe!');
-      }
-    }
-  })
-  return result;
+  console.log('in inference ', result);
+  return;
 }
-
-modelNSFWHuggingFace('/home/krazygenus/Desktop/a.jpg')
-  .then((res) => console.log(JSON.stringify(res)))
-  .catch(console.error);
-
 module.exports = { modelNSFWHuggingFace };

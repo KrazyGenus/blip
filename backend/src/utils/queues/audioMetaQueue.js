@@ -1,8 +1,8 @@
 const { Queue } = require('bullmq');
 const { redisClient } = require('../../core/redis/connection');
 
-const uploadMetaDataQueue = new Queue('uploadMetaDataQueue', {
+const audioMetaQueue = new Queue('audioMetaQueue', {
   connection: redisClient.getConnection()
 });
 
-module.exports = { uploadMetaDataQueue };
+module.exports = { audioMetaQueue };

@@ -1,5 +1,4 @@
 const { Pool } = require('pg');
-const { isExistingEmail } = require('../crud/userAuth');
 require('dotenv').config();
 
 
@@ -40,7 +39,7 @@ class DatabaseManager {
         } catch (error) {
             console.log('Error ending pool and cleaning up', error);
         }
-        await this.createPool();
+        this.createPool();
     }
 
     async close(){
@@ -53,4 +52,4 @@ class DatabaseManager {
 }
 
 const databaseManager = new DatabaseManager();
-module.exports = {databaseManager};
+module.exports = { databaseManager };

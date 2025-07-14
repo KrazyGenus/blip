@@ -12,6 +12,8 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
+const { setRefreshToken, verifyRefreshToken } = require('./redis/refreshTokenStore');
+
 /**
  * 
  * @param {*} plainPassword 
@@ -35,6 +37,8 @@ async function unhashAndCompare(plainPassword, hashedPassword) {
 }
 
 
+
+
 /**
  * 
  * @param {*} userId 
@@ -43,12 +47,21 @@ async function unhashAndCompare(plainPassword, hashedPassword) {
  */
 async function signGenerateToken(userId, userEmail) {
     const privateKey = fs.readFileSync("/home/krazygenus/Desktop/blip/backend/private.key", "utf8");
-    const token = jwt.sign({ id: userId, email: userEmail }, privateKey, {
+    const accessToken = jwt.sign({ id: userId, email: userEmail }, privateKey, {
         algorithm: "RS256",
         expiresIn: "1h"
     });
-    return token;
+    const refreshToken = await setRefreshToken(userId, userEmail);
+    
+    return {
+        userId,
+        status: 200,
+        message: 'Login successful',
+        accessToken,
+        refreshToken
+    }
 }
+
 
 
 /**
@@ -58,15 +71,28 @@ async function signGenerateToken(userId, userEmail) {
  */
 async function signDecodeToken(token) {
     try {
-        const publicKey = fs.readFileSync("/home/krazygenus/Desktop/blip/backend/public.key", "utf8");
-        const decode = jwt.verify(token, publicKey, {
-            algorithms: ["RS256"]
-        });
-        return decode;
+        if(token.startsWith('Bearer')) {
+            let newToken = token.split(' ')[1];
+            const publicKey = fs.readFileSync("/home/krazygenus/Desktop/blip/backend/public.key", "utf8");
+            const decode = jwt.verify(newToken, publicKey, {
+                algorithms: ["RS256"]
+            });
+            return { status: 200, decode };
+        }
+        else {
+            const publicKey = fs.readFileSync("/home/krazygenus/Desktop/blip/backend/public.key", "utf8");
+            const decode = jwt.verify(token, publicKey, {
+                algorithms: ["RS256"]
+            });
+            return decode;
+        }
     } catch (error) {
-        console.error("JWT Decode Error:", error);
-        return false;
+        if (error.name === 'TokenExpiredError') {
+            return {status: 401, message: 'Token expired, redirect to refresh route'}
+        }
     }
 }
 
-module.exports = {hashPassword, unhashAndCompare, signGenerateToken, signDecodeToken};
+
+
+module.exports = { hashPassword, unhashAndCompare, signGenerateToken, signDecodeToken, };

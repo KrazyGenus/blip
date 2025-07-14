@@ -3,18 +3,17 @@ const { redisClient } = require('../../core/redis/connection');
 const ffmpeg = require('fluent-ffmpeg');
 const fs = require('fs');
 const path = require('path');
-const { inferenceQueue } = require('../queues/inferenceQueue');
-
+const { dHashQueue } = require('../queues/dHashQueue');
 
 console.log('👷 Worker starting...');
 
-const worker = new Worker('uploadMetaDataQueue', async (job) => {
+const worker = new Worker('videoMetaQueue', async (job) => {
   if (job.name !== 'process_video') {
     console.warn('Skipping unknown job:', job.name);
     return;
   }
 
-  const { tempPath, frameDir, jobId } = job.data;
+  const { tempPath, frameDir, jobId, userId } = job.data;
 
   if (!fs.existsSync(tempPath)) {
     throw new Error(`File not found: ${tempPath}`);
@@ -24,7 +23,7 @@ const worker = new Worker('uploadMetaDataQueue', async (job) => {
     const timeStamps = [];
     ffmpeg(tempPath)
       .outputOptions([
-        '-vf', "select='gt(scene,0.3)',showinfo",
+        '-vf', "select='gt(scene,0.04)',showinfo",
         '-vsync', 'vfr',
         '-q:v', '2'
       ])
@@ -36,15 +35,17 @@ const worker = new Worker('uploadMetaDataQueue', async (job) => {
         }
       })
       .on('end', () => {
-        console.log(`✅ Job ${jobId} completed.`);
+        console.log(`✅ Job ${userId}:${jobId} completed.`);
+        let userJobId = `${userId}:${jobId}`
         const metadata = timeStamps.map((start, i) => ({
+          userJobId,
           index: i + 1,
           start,
           end: timeStamps[i + 1] || null,
           framePath: path.join(frameDir, `scene-${String(i + 1).padStart(3, '0')}.jpg`)
         }))
-        inferenceQueue.add('frame-meta', metadata);
-        fs.unlinkSync(tempPath); // optional: clean up
+        dHashQueue.add('frame-meta', metadata);
+        fs.unlinkSync(tempPath);
         resolve();
       })
       .on('error', (err) => {

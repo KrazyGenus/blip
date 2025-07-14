@@ -15,19 +15,20 @@ const { hashPassword, unhashAndCompare } = require('../core/security');
  */
 async function isExistingEmail(email){
     if (email === undefined){return false;}
-    const query = `SELECT email FROM user_account.users WHERE email=$1 LIMIT 1;`;
+    const query = `SELECT * FROM user_account.users WHERE email=$1 LIMIT 1;`;
     try {
         const dbStatus = await databaseManager.isAlive();
         if (dbStatus === true) {
             const pool = databaseManager.getPool();
             const result = await pool.query(query, [email]);
-            return result.rowCount > 0;
+            if (result.rowCount > 0){ return result.rows[0]}
         }
         else {
             await databaseManager.reconnect();
             const pool = databaseManager.getPool();
             const result = await pool.query(query, [email]);
-            return result.rowCount > 0;
+            if (result.rowCount > 0){ return result.rows[0]}
+            else return false;
         }
     } catch(err){
         console.log('Generated error from the isExstingEmail', err);
@@ -53,7 +54,7 @@ async function userRegistration(username, email, password) {
 
         // check if the email exists
         const emailStatus = await isExistingEmail(email);
-        if (emailStatus){
+        if (emailStatus.email){
             return {success:false, message: 'Email already registered.'};
         }
         // this indicates a user with that email does not exist in the database.
@@ -102,45 +103,31 @@ async function userLogin(loginEmail, password) {
     if(!loginEmail || !password) {
         return {success: false, message: 'All fields are required'};
     }
-    const emailStatus = await isExistingEmail(loginEmail);
-    if (!emailStatus) {
+    const emailStatusAndPayload = await isExistingEmail(loginEmail);
+    if (!emailStatusAndPayload) {
         return {success: false, message: 'email or password wrong, try again.'};
     }
-
-    if (emailStatus) {
-        try {
-            // Get user from database
-            const pool = databaseManager.getPool();
-            const query = `
-                SELECT *  FROM user_account.users WHERE email=$1;
-        `;
-            const result = await pool.query(query, [loginEmail]);
-
-            const user = result.rows[0];
-            console.log('During db retrival object', user);
-            //verify password
-            const isPasswordValid = await unhashAndCompare(password, user.password_hash);
-            if (!isPasswordValid){
-                return {success: false, message: 'Invalid password'};
-            }
-
-            // Successful login
-            return {
-                success: true,
-                user: {
-                    id: user.user_id,
-                    username: user.username,
-                    email: user.email
-                },
-                message: 'Login successful'
+    try {
+        console.log('During db retrival object', emailStatusAndPayload);
+        //verify password
+        const isPasswordValid = await unhashAndCompare(password, emailStatusAndPayload.password_hash);
+        if (!isPasswordValid){
+            return {success: false, message: 'Invalid password'};
+        }
+        // Successful login
+        return {
+            success: true,
+            user: {
+                id: emailStatusAndPayload.user_id,
+                username: emailStatusAndPayload.username,
+                email: emailStatusAndPayload.email
+            },
+            message: 'Login successful'
         }
     }
     catch (error) {
-        
-        console.log(error);
-        //[re[are a json if you feel like it]]        
+        console.log(error); 
     }
-}
 }
 
 /**
