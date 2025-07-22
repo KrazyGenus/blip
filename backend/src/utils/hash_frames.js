@@ -108,6 +108,7 @@ async function processFrame(framePath, frameObject) {
         if(!isDuplicate) {
             uniqueHashes.add(currentHash);
             nonDuplicateList.push(frameObject);
+            console.log('frame object pass', frameObject);
             await frameInferenceQueue.add('inference', frameObject);
             uniqueFrameCount++;
         }

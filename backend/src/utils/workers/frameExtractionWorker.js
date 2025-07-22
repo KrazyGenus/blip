@@ -27,7 +27,7 @@ const worker = new Worker('videoMetaQueue', async (job) => {
         '-vsync', 'vfr',
         '-q:v', '2'
       ])
-      .output(`${frameDir}/scene-%03d.jpg`)
+      .output(`${frameDir}/scene-%03d.jpeg`)
       .on('stderr', (line) => {
         const match = line.match(/pts_time:([\d.]+)/);
         if(match) {
@@ -36,17 +36,17 @@ const worker = new Worker('videoMetaQueue', async (job) => {
       })
       .on('end', () => {
         console.log(`✅ Job ${userId}:${jobId} completed.`);
-        let userJobId = `${userId}:${jobId}`
         const metadata = timeStamps.map((start, i) => ({
-          userJobId,
+          jobId,
+          userId,
           index: i + 1,
           start,
           end: timeStamps[i + 1] || null,
-          framePath: path.join(frameDir, `scene-${String(i + 1).padStart(3, '0')}.jpg`)
+          framePath: path.join(frameDir, `scene-${String(i + 1).padStart(3, '0')}.jpeg`)
         }))
         dHashQueue.add('frame-meta', metadata);
         fs.unlinkSync(tempPath);
-        resolve();
+        return resolve();
       })
       .on('error', (err) => {
         console.error(`❌ FFmpeg failed for job ${jobId}:`, err.message);

@@ -8,7 +8,7 @@ const fs = require('fs').promises;
  */
 async function fileToGenerativePart(filePath) {
     // Determine the file type. Required by Gemeni when constructing the header
-    const mimeType = 'image/jpg';
+    const mimeType = "image/jpeg";
 
     // Read the file content
     const imageBuffer = await fs.readFile(filePath);

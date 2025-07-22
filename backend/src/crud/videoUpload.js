@@ -22,7 +22,7 @@ async function videoUpload(req, res) {
             const tempPath = path.join(TEMP_DIR, `${jobId}_${safeName}`);
             const frameDir = path.join(FRAME_BASE_DIR, `user_${userId}`, jobId);
             const audioDir = path.join(AUDIO_BASE_DIR, `user_${userId}`, jobId)
-        
+            const uniqueVideoURL = `user_${userId}:video:${jobId}`;
             fs.mkdirSync(path.dirname(tempPath), { recursive: true });
             fs.mkdirSync(frameDir, { recursive: true });
             fs.mkdirSync(audioDir, { recursive: true });
@@ -47,6 +47,7 @@ async function videoUpload(req, res) {
                     userId,
                     tempPath,
                     frameDir,
+                    uniqueVideoURL,
                     originalName: safeName,
                     size
                   });
