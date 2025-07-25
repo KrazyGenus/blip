@@ -59,7 +59,8 @@ class Connection {
            const docSnapShot = await docRef.get();
            if (docSnapShot.exists) {
             try {
-                await docRef.update(payload);
+                if (collection === 'visualViolations'){ await docRef.update({'flagged_frames' : FieldValue.arrayUnion(...payload)}); }
+                else if (collection === 'audioViolations') {  await docRef.update({ 'audio_violations': FieldValue.arrayUnion(...payload) }); }
                 return { update: true }
             } catch (error) {
                 console.log('Error during update of document', error);
@@ -68,7 +69,8 @@ class Connection {
 
            else {
             try {
-                await docRef.set(payload);
+                if (collection === 'visualViolations'){await docRef.set({ 'flagged_frames': payload });}
+                else if (collection === 'audioViolations') {await docRef.set({ 'audio_violations': payload });}
                 return  { save: true }
             } catch (error) {
                 console.log('Error during setting of document', error);

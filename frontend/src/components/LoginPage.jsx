@@ -139,11 +139,10 @@ const LoginPage = () => {
       setStatus({ state: 'idle', message: '' }); // Clear previous status
 
       try {
-        const response = await axios.post('api/user/login', { email, password });
-
+        const response = await axios.post('api/user/auth/login', { email, password });
         if (response.status === 200) {
           const token = response.data.token;
-          console.log("LoginPage handleSubmit: Login API successful. Token received:", token);
+          console.log("LoginPage handleSubmit: Login API successful. Token received:", response.data);
 
           // 1. Call the `login` function from your AuthContext.
           // This function stores the token in localStorage AND updates the `isAuthenticated` state.
@@ -151,9 +150,7 @@ const LoginPage = () => {
 
           // Your original console.log for localStorage check is still useful for debugging:
           console.log('LoginPage handleSubmit: Token after AuthContext.login() call:', localStorage.getItem('token'));
-          // Important: Ensure the key 'token' matches the one your AuthContext expects!
-          // If your AuthContext uses 'jwt_token', then change localStorage.getItem('token') to localStorage.getItem('jwt_token')
-          // and ensure the login function in AuthContext also sets 'jwt_token'.
+  
 
           setStatus({ state: 'success', message: 'Login successful! Attempting dashboard access...' });
           setEmail('');
@@ -161,13 +158,10 @@ const LoginPage = () => {
           setEmailError('');
           setPasswordError('');
 
-          // 2. (Optional) Your immediate dashboard API call for server-side validation.
-          // This is good practice, but it's no longer directly responsible for triggering client-side navigation.
-          // The navigation to /dashboard is now handled by the useEffect above.
           try {
             const dash = await axios.get('/api/user/dashboard', {
                 headers: {
-                    Authorization: `Bearer ${token}` // IMPORTANT: Use the newly obtained token here
+                    Authorization: `Bearer ${token}`
                 }
             });
             if (dash.status === 200) {

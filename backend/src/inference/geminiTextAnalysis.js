@@ -19,7 +19,7 @@ const ai = new GoogleGenAI({ apiKey: GOOGLE_GEMINI_TEXT_KEY });
  * @returns {Promise<Array<Object>>} A promise that resolves to an array of violation objects,
  * or an empty array if no violations are found or an error occurs.
  */
-async function geminiTextAnalysis(fullTranscript, utterancesArray, jobId, userId) {
+async function geminiTextAnalysis(fullTranscript, utterancesArray) {
 
   // --- Gemini Prompt with Hyper-Explicit Moderation Guidelines ---
   const prompt = `
@@ -103,12 +103,12 @@ async function geminiTextAnalysis(fullTranscript, utterancesArray, jobId, userId
     const responseText = result.candidates?.[0]?.content?.parts?.[0]?.text;
     // Clean the response text: remove markdown fences if present
     const jsonString = responseText.replace(/```json\n|\n```/g, '').trim();
-
-    let parsedOutput = [];
+    //let parsedOutput = [];
     if (jsonString) {
-        try {
-            parsedOutput = JSON.parse(jsonString); // UNCOMMENTED AND USED
-            console.log('Gemini Parsed Output:', parsedOutput);
+        try { 
+            const parsedOutput = await JSON.parse(jsonString);
+            console.log('Gemeni Parsed output: ', parsedOutput);
+            return parsedOutput;
         } catch (parseError) {
             console.error('Error occurred during JSON parsing of Gemini response:', parseError);
             console.error('Raw Gemini response text that failed to parse:', responseText);

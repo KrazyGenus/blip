@@ -78,11 +78,11 @@
    * Configuration for Gemini's generation parameters.
    */
   const generationConfig = {
-    temperature: 0.2, // Lower temperature for more deterministic/factual output
+    temperature: 0.2,
     topK: 0,
     topP: 0,
-    maxOutputTokens: 2048, // Adjust as needed, but this is a good starting point
-    responseMimeType: "application/json", // Crucial for JSON output
+    maxOutputTokens: 2048,
+    responseMimeType: "application/json",
   };
 
   /**
@@ -144,7 +144,7 @@
 
       let parsedOutput = [];
       try {
-        parsedOutput = await JSON.parse(jsonString);
+        parsedOutput.push(await JSON.parse(jsonString));
         console.log('Parsed Gemini output:', parsedOutput);
         return parsedOutput;
       } catch (parseError) {

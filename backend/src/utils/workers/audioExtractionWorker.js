@@ -18,7 +18,7 @@ async function audioExtractionStart() {
     }
 
     console.log('🎶 Audio Extraction Worker started!');
-    const worker = new Worker('audioMetaQueue', async(job) => {number
+    const worker = new Worker('audioMetaQueue', async(job) => {
     console.log('Audio Worker processing a job!');
     const { jobId, userId, notifyChannel, tempPath, audioDir, originalName, size } = job.data;
     const audioName = `audio_${job.data.userId}_${job.data.originalName.split('.')[0]}`
@@ -31,7 +31,6 @@ async function audioExtractionStart() {
             .audioCodec('pcm_s16le')
             .format('wav')
             .on('end', () => {
-                console.log('Audio extraction complete.')
                 audioInferenceQueue.add('audio-extraction',
                     {
                         jobId,
@@ -56,7 +55,7 @@ async function audioExtractionStart() {
 }, { connection: redisClient.getConnection(), concurrency: 1 });
 
     // --- Worker Event Listeners (for robust logging and debugging) ---
-    worker.on('')
+    // worker.on('')
 }
 
 audioExtractionStart();

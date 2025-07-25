@@ -35,6 +35,7 @@ async function processAccumulatedBatch(jobId, userId) {
         console.log('framePath len', fileToGenerativeParts.length);
         // Send the array of Gemini Part objects to your analysis function
         const gemeniVisualAnalysisResponse = await geminiVisualAnalysis(fileToGenerativeParts);
+        console.log('The type is: ', typeof(gemeniVisualAnalysisResponse))
         console.log(`[Worker Batcher] Gemini analysis complete for batch. Overall assessment: ${gemeniVisualAnalysisResponse.overall_assessment}`);
         try {
             const saveStatus = await fireStoreClient.createOrUpdateDocument(userId, jobId, 'visualViolations', gemeniVisualAnalysisResponse);

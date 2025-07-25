@@ -33,24 +33,24 @@ async function videoUpload(req, res) {
               file.on('data', chunk => size += chunk.length);
               file.pipe(writeStream)
                 .on('finish', () => {
-                  // audioMetaQueue.add('process_audio', {
-                  //   jobId,
-                  //   userId,
-                  //   notifyChannel: `user:${userId}`,
-                  //   tempPath,
-                  //   audioDir,
-                  //   originalName: safeName,
-                  //   size
-                  // });
-                  videoMetaQueue.add('process_video', {
+                  audioMetaQueue.add('process_audio', {
                     jobId,
                     userId,
+                    notifyChannel: `user:${userId}`,
                     tempPath,
-                    frameDir,
-                    uniqueVideoURL,
+                    audioDir,
                     originalName: safeName,
                     size
                   });
+                  // videoMetaQueue.add('process_video', {
+                  //   jobId,
+                  //   userId,
+                  //   tempPath,
+                  //   frameDir,
+                  //   uniqueVideoURL,
+                  //   originalName: safeName,
+                  //   size
+                  // });
                   resolve(`${userId}:${jobId}`);
                 });
             });

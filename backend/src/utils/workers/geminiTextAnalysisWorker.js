@@ -1,7 +1,7 @@
 const { Worker } = require('bullmq');
 const { redisClient } = require('../../core/redis/connection');
 const { geminiTextAnalysis } = require('../../inference/geminiTextAnalysis');
-
+const { fireStoreClient } = require('../../core/firestore/connection');
 
 async function geminiTextAnalysisStart() {
     console.log('GemeniAudioAnalysis Worker Start.')
@@ -28,7 +28,16 @@ async function geminiTextAnalysisStart() {
             fullTranscript,
             utterancesArray } = job.data;
         try {
-            await geminiTextAnalysis(fullTranscript, utterancesArray, jobId, userId);   
+            const geminiTextAnalysisResponse = await geminiTextAnalysis(fullTranscript, utterancesArray);
+            if (geminiTextAnalysisResponse) {
+                await fireStoreClient.createOrUpdateDocument(
+                    userId,
+                    jobId,
+                    'audioViolations',
+                    geminiTextAnalysisResponse);
+            }
+         
+
         } catch (error) {
             console.log('Error encountered, when passing transcript et al to gemini', error);
             process.exit(1);
