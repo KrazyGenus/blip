@@ -131,14 +131,14 @@ const LandingPage = () => {
         >
           <h2 className="text-3xl font-extrabold text-white tracking-tight">
             <span className="bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">
-              Blip
+              Omi
             </span>: Your AI Content Guardian
           </h2>
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300 leading-tight drop-shadow-lg">
             Upload With Confidence.<br /><span className="text-yellow-300">Get Your First 5 Hours FREE!</span>
           </h1>
           <p className="text-xl text-gray-200 leading-relaxed">
-            Blip employs advanced AI to meticulously scan your video content for potential policy violations, copyright concerns, and inappropriate material *before* you publish—empowering creators to maintain compliance, ensure smooth monetization, and prevent costly takedowns.
+            Omi employs advanced AI to meticulously scan your video content for potential policy violations, copyright concerns, and inappropriate material *before* you publish—empowering creators to maintain compliance, ensure smooth monetization, and prevent costly takedowns.
           </p>
           <button
             className="bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-full px-12 py-4 shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 text-xl tracking-wide transform hover:from-purple-500 hover:to-blue-500"
@@ -174,7 +174,7 @@ const LandingPage = () => {
       {/* How It Works Section - More visual and impactful */}
       <section className="relative z-10 mx-auto px-6 py-24 w-full max-w-7xl text-center">
         <h2 className="text-4xl font-bold mb-20 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 drop-shadow-md">
-          The Blip Workflow: Simple, Fast, Secure
+          The Omi Workflow: Simple, Fast, Secure
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
           <motion.div variants={fadeIn} initial="hidden" animate="visible" className="space-y-6">
@@ -204,7 +204,7 @@ const LandingPage = () => {
       {/* Features Section - Updated headline */}
       <section className="relative z-10 mx-auto px-6 py-24 w-full max-w-7xl">
         <h2 className="text-4xl font-bold text-center mb-20 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 drop-shadow-md">
-          Why Blip is Your Essential Content Guardian
+          Why Omi is Your Essential Content Guardian
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {features.map((feature) => (
@@ -255,7 +255,7 @@ const LandingPage = () => {
       {/* Testimonial Section - Enhanced visual appeal */}
       <section className="bg-white/5 backdrop-blur-md py-24 w-full relative z-10">
         <div className="mx-auto px-6 text-center max-w-7xl">
-          <h2 className="text-4xl font-bold mb-16 text-white drop-shadow-md">What Creators Are Saying About Blip</h2>
+          <h2 className="text-4xl font-bold mb-16 text-white drop-shadow-md">What Creators Are Saying About Omi</h2>
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -266,7 +266,7 @@ const LandingPage = () => {
             <Zap className="absolute top-4 left-4 w-10 h-10 text-purple-400 opacity-70" />
             <ListChecks className="absolute bottom-4 right-4 w-10 h-10 text-blue-400 opacity-70" />
             <p className="text-2xl italic text-gray-200 leading-relaxed">
-              "Blip has fundamentally transformed my content workflow. I can now upload with absolute confidence, knowing my videos are compliant and my monetization is secure. It has saved me countless hours of stress and manual review!"
+              "Omi has fundamentally transformed my content workflow. I can now upload with absolute confidence, knowing my videos are compliant and my monetization is secure. It has saved me countless hours of stress and manual review!"
             </p>
             <p className="mt-8 text-xl font-semibold text-white">- Alex 'The Creator', Leading Gaming Channel</p>
           </motion.div>
@@ -279,7 +279,7 @@ const LandingPage = () => {
           Ready to Elevate Your Content Strategy?
         </h2>
         <p className="text-xl text-gray-300 mb-12 leading-relaxed">
-          Join the growing number of creators who trust Blip to safeguard their content and streamline their workflow.
+          Join the growing number of creators who trust Omi to safeguard their content and streamline their workflow.
         </p>
         <button
           className="bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-full px-16 py-5 shadow-3xl hover:shadow-4xl hover:scale-105 transition-all duration-300 text-2xl tracking-wide transform hover:from-purple-500 hover:to-blue-500"

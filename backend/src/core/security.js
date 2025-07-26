@@ -46,19 +46,23 @@ async function unhashAndCompare(plainPassword, hashedPassword) {
  * @returns 
  */
 async function signGenerateToken(userId, userEmail) {
-    const privateKey = fs.readFileSync("/home/krazygenus/Desktop/blip/backend/private.key", "utf8");
-    const accessToken = jwt.sign({ id: userId, email: userEmail }, privateKey, {
-        algorithm: "RS256",
-        expiresIn: "1h"
-    });
-    const refreshToken = await setRefreshToken(userId, userEmail);
-    
-    return {
-        userId,
-        status: 200,
-        message: 'Login successful',
-        accessToken,
-        refreshToken
+    try {
+        const privateKey = fs.readFileSync("../src/../private.key", "utf8");
+        const accessToken = jwt.sign({ id: userId, email: userEmail }, privateKey, {
+            algorithm: "RS256",
+            expiresIn: "1h"
+        });
+        const refreshToken = await setRefreshToken(userId, userEmail);
+        
+        return {
+            userId,
+            status: 200,
+            message: 'Login successful',
+            accessToken,
+            refreshToken
+        }
+    } catch (error) {
+        console.log('Error during reding of private key', error)
     }
 }
 
@@ -73,14 +77,14 @@ async function signDecodeToken(token) {
     try {
         if(token.startsWith('Bearer')) {
             let newToken = token.split(' ')[1];
-            const publicKey = fs.readFileSync("/home/krazygenus/Desktop/blip/backend/public.key", "utf8");
+            const publicKey = fs.readFileSync("../src/../public.key", "utf8");
             const decode = jwt.verify(newToken, publicKey, {
                 algorithms: ["RS256"]
             });
             return { status: 200, decode };
         }
         else {
-            const publicKey = fs.readFileSync("/home/krazygenus/Desktop/blip/backend/public.key", "utf8");
+            const publicKey = fs.readFileSync("../src/../public.key", "utf8");
             const decode = jwt.verify(token, publicKey, {
                 algorithms: ["RS256"]
             });

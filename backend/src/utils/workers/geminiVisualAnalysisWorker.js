@@ -12,7 +12,7 @@ let currentBatch = [] // Array of current batch
 let batchTimeoutId = null;
 
 // function to process the accumulated jobs
-async function processAccumulatedBatch(jobId, userId) {
+async function processAccumulatedBatch(userId, jobId) {
     if (currentBatch.length === 0) {
         console.log('Worker batch No jobs in current batch to process');
         return;
@@ -38,8 +38,7 @@ async function processAccumulatedBatch(jobId, userId) {
         console.log('The type is: ', typeof(gemeniVisualAnalysisResponse))
         console.log(`[Worker Batcher] Gemini analysis complete for batch. Overall assessment: ${gemeniVisualAnalysisResponse.overall_assessment}`);
         try {
-            const saveStatus = await fireStoreClient.createOrUpdateDocument(userId, jobId, 'visualViolations', gemeniVisualAnalysisResponse);
-            console.log(saveStatus);
+           await fireStoreClient.createOrUpdateDocument(userId, jobId, 'visualViolations', gemeniVisualAnalysisResponse);
         } catch (error) {
             console.log(error);
         }
@@ -76,14 +75,14 @@ async function startFrameInferenceWorker() {
             currentBatch.push(job);
             const { jobId, userId } = job.data; 
             if (currentBatch.length >= BATCHSIZE) {
-                await processAccumulatedBatch(jobId, userId);
+                await processAccumulatedBatch(userId, jobId);
             }
             else {
                 // If not full, set/reset a timeout to process partial batch
                 if (batchTimeoutId) {
                     clearTimeout(batchTimeoutId);
                 }
-                batchTimeoutId = setTimeout(() => { processAccumulatedBatch()}, BATCHTIMEOUTMS );
+                batchTimeoutId = setTimeout(() => { processAccumulatedBatch(userId, jobId)}, BATCHTIMEOUTMS );
             }
 
             return {status: 'Pending batch processing'}
